@@ -46,3 +46,4 @@ app.*.map.json
 /macos/
 /windows/
 /test/
+.env

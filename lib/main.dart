@@ -3,16 +3,17 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Forçar modo retrato (ou landscape, dependendo da TV)
   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   // Forçar fullscreen imersivo
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
+  await dotenv.load();
+  debugPrint('URL_POWERBI: ${dotenv.env['URL_POWERBI']}');
   runApp(const KioskApp());
 }
 
@@ -36,13 +37,17 @@ class WebviewPage extends StatefulWidget {
 }
 
 class _WebviewPageState extends State<WebviewPage> {
+  late final String urlPowerBI;
   late final WebViewController _controller;
-  final String url = "https://app.powerbi.com/view?r=eyJrIjoiMmJkZTMzYTUtODU2OC00OTY1LWJmOTUtOWJhYjBjY2E1YjU0IiwidCI6ImI2ZmI3ZTA5LTVjZTktNDI1Ny1iMDc0LWJkMWNiOTc1MGFhZiJ9"; // ⬅️ sua URL aqui
+  late final String url;
 
   @override
   void initState() {
     super.initState();
     WakelockPlus.enable(); // impede tela de apagar
+
+    urlPowerBI = dotenv.env['URL_POWERBI'] ?? '';
+    url = urlPowerBI;
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
